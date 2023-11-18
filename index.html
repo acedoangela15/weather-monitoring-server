@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      .container {
+        max-width: 1440px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 90vh;
+      }
+
+      .wrapper {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+
+      .weather-wrapper {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        row-gap: 0.75rem;
+      }
+
+      .weather-wrapper .value {
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="wrapper">
+        <div class="weather-wrapper">
+          <h2>Temperature</h2>
+          <div id="temperature" class="value">0</div>
+        </div>
+
+        <div class="weather-wrapper">
+          <h2>Humidity</h2>
+          <div id="humidity" class="value">0</div>
+        </div>
+
+        <div class="weather-wrapper">
+          <h2>Wind Speed</h2>
+          <div id="wind-speed" class="value">0</div>
+        </div>
+
+        <div class="weather-wrapper">
+          <h2>Rainfall</h2>
+          <div id="rainfall" class="value">0</div>
+        </div>
+      </div>
+
+      <button id="btn">Start session</button>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const socket = io();
+      const btn = document.getElementById("btn");
+
+      const startSession = () => {
+        return fetch("http://localhost:8080/start-session", { method: "POST" });
+      };
+
+      socket.on("connection", () => {
+        console.log("connect");
+      });
+
+      btn.addEventListener("click", startSession);
+    </script>
+  </body>
+</html>
