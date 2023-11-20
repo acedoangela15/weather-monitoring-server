@@ -29,9 +29,25 @@ app.get('/', (req, res) => {
 io.on('connection', socket => {
   console.log('a user connected');
 
+  socket.on('temperatureData', data => {
+    console.log('temperatureData', data);
+  });
+
+  socket.on('humidityData', data => {
+    console.log('humidityData', data);
+  });
+
+  socket.on('rainfallData', data => {
+    console.log('rainfallData', data);
+  });
+
+  socket.on('windSpeedData', data => {
+    console.log('windSpeedData', data);
+  });
+
   socket.on('weatherData', data => {
     console.log('weatherData', data);
-    // socket.emit("weatherResponse", data);
+    socket.emit('weatherResponse', data);
 
     // const { SerialPort, ReadlineParser } = require("serialport");
 
