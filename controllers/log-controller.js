@@ -39,6 +39,8 @@ const updateLog = async (req, res, next) => {
 
     const updateLog = await Log.findByIdAndUpdate(uid, payload, { new: true });
 
+    console.log('updateLog', updateLog);
+
     res.json({ log: updateLog, message: 'Log updated successfully' });
   } catch (error) {
     console.log('log reg error: ', error);
