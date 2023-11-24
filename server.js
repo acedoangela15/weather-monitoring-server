@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 const express = require('express');
+const mongoose = require('mongoose');
+const bodyParser = require('body-parser');
 const http = require('http');
 const { Server } = require('socket.io');
 const server_config = require('./config');
@@ -17,62 +19,38 @@ const io = new Server(server, {
   },
 });
 
+const HttpError = require('./models/http-error');
+const Log = require('./models/log');
+
+const logRoutes = require('./routes/log-routes');
+
 // middlewares
 app.use(server_config.cors);
-
+app.use(express.urlencoded({ parameterLimit: 1000000, limit: '50mb', extended: true }));
 app.use(express.json({ limit: '50mb' }));
+app.set('json spaces', 2);
 
-app.get('/', (req, res) => {
-  res.send('<h1>Welcome to NodeMCU Socket API</h1>');
+// routes
+app.use('/api/log', logRoutes);
+
+app.use((req, res, next) => {
+  const error = new HttpError('Could not find this route.', 404);
+  throw error;
+});
+
+// special route to handle errors
+app.use((error, req, res, next) => {
+  res.status(error.code || 500);
+  res.json({ message: error.message || 'An unknown error occurred!' });
 });
 
 io.on('connection', socket => {
   console.log('a user connected');
 
-  socket.on('temperatureData', data => {
-    console.log('temperatureData', data);
-  });
-
-  socket.on('humidityData', data => {
-    console.log('humidityData', data);
-  });
-
-  socket.on('rainfallData', data => {
-    console.log('rainfallData', data);
-  });
-
-  socket.on('windSpeedData', data => {
-    console.log('windSpeedData', data);
-  });
-
   socket.on('weatherData', data => {
     console.log('weatherData', data);
-    socket.emit('weatherResponse', data);
-
-    // const { SerialPort, ReadlineParser } = require("serialport");
-
-    // const arduinoPort = new SerialPort({ path: "COM5", baudRate: 115200 });
-    // const parser = arduinoPort.pipe(new ReadlineParser({ delimiter: "\r\n" }));
-
-    // arduinoPort.write("START_SESSION\n", (err) => {
-    //   if (err) return console.error("Err Arduino:", err);
-
-    //   parser.on("data", function (data) {
-    //     try {
-    //       const receivedData = JSON.parse(data); // Parse the received JSON string
-    //       console.log("Received Data:", receivedData);
-
-    //       socket.emit("weatherResponse", receivedData);
-    //     } catch (error) {
-    //       console.error("Error passing JSON", error);
-    //     }
-    //   });
-
-    //   console.log("Success Arduino.");
-    // });
 
     return 'Session started.';
-    // res.send("Session started.");
   });
 
   socket.on('disconnect', () => {
@@ -80,4 +58,17 @@ io.on('connection', socket => {
   });
 });
 
-server.listen(PORT, () => console.log(`Server is running to ${PORT} port`));
+// connection to database
+mongoose
+  .connect(
+    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@${process.env.DB_CLUSTER}/weather-monitoring?retryWrites=true&w=majority`
+  )
+  .then(() => {
+    server.listen(PORT, () => console.log(`Server is running to ${PORT} port`));
+
+    console.table({ URL: `http://localhost:${PORT}` });
+    console.log('Connection Successful!');
+  })
+  .catch(err => {
+    console.log(err);
+  });
