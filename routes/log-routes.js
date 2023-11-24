@@ -5,6 +5,6 @@ const logController = require('../controllers/log-controller');
 
 router.post('/new', logController.createLog);
 router.get('/', logController.getLatestLog);
-router.post('/update', logController.updateLog);
+router.put('/update', logController.updateLog);
 
 module.exports = router;
