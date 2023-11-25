@@ -36,12 +36,12 @@ const updateLog = async (req, res, next) => {
   try {
     const payload = req.body;
 
-    if (Object.keys(payload).length === 0) return next(new HttpError('No payload', 400));
+    if (Object.keys(payload.data).length === 0) return next(new HttpError('No payload', 400));
 
     const log = await Log.findById(uid);
     if (!log) return next(new HttpError('Log not found', 404));
 
-    const updateLog = await Log.findByIdAndUpdate(uid, payload, { new: true });
+    const updateLog = await Log.findByIdAndUpdate(uid, payload.data, { new: true });
     console.log('updateLog', updateLog);
 
     res.json({ message: 'Log updated successfully' });
