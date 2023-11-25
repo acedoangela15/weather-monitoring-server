@@ -31,19 +31,20 @@ const getLatestLog = async (req, res, next) => {
 };
 
 const updateLog = async (req, res, next) => {
-  const payload = req.body;
   const uid = '65477b50bd134bca8e14feb3';
 
-  console.log('PAYLOAD', req.body);
   try {
+    const payload = req.body;
+
+    if (Object.keys(payload).length === 0) return next(new HttpError('No payload', 400));
+
     const log = await Log.findById(uid);
     if (!log) return next(new HttpError('Log not found', 404));
 
     const updateLog = await Log.findByIdAndUpdate(uid, payload, { new: true });
-
     console.log('updateLog', updateLog);
 
-    res.json({ log: updateLog, message: 'Log updated successfully' });
+    res.json({ message: 'Log updated successfully' });
   } catch (error) {
     console.log('log reg error: ', error);
     return next(new HttpError('Something went wrong', 500));
