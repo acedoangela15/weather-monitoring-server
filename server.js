@@ -40,6 +40,9 @@ app.use((req, res, next) => {
 
 // special route to handle errors
 app.use((error, req, res, next) => {
+  console.log(
+    `error from special route handler: {status: ${error.code || 500}, message: ${error.message}}`
+  );
   res.status(error.code || 500);
   res.json({ message: error.message || 'An unknown error occurred!' });
 });

@@ -33,6 +33,8 @@ const getLatestLog = async (req, res, next) => {
 const updateLog = async (req, res, next) => {
   const payload = req.body;
   const uid = '65477b50bd134bca8e14feb3';
+
+  console.log('PAYLOAD', req.body);
   try {
     const log = await Log.findById(uid);
     if (!log) return next(new HttpError('Log not found', 404));
