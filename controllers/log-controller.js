@@ -44,7 +44,7 @@ const updateLog = async (req, res, next) => {
     const updateLog = await Log.findByIdAndUpdate(uid, payload.data, { new: true });
     console.log('updateLog', updateLog);
 
-    res.json({ message: 'Log updated successfully' });
+    res.json({ log: updateLog, message: 'Log updated successfully' });
   } catch (error) {
     console.log('log reg error: ', error);
     return next(new HttpError('Something went wrong', 500));
